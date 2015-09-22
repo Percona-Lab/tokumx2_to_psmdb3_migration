@@ -2,6 +2,8 @@
 
 // dump indexes to a json file
 
+// author: david. bennett at percona. com
+
 // usage example: 
 //   mongo -u admin -p {pwd} tokumx_dump_indexes.js > tokumxIndexes.json 
 

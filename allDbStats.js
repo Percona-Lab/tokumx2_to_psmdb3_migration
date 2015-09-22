@@ -1,5 +1,9 @@
 #!/usr/bin/mongo --quiet
 
+// show mongodb stats (databases, collections and indexes)
+
+// author: david. bennett at percona. com
+
 db = db.getSiblingDB('admin');
 
 var dbs = db.adminCommand('listDatabases');
