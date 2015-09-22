@@ -43,7 +43,7 @@ var trialRun =
   ? false
   : optTrialRun;
 
-// options to removing from TokuMX index defintions
+// options to remove from TokuMX index defintions
 var cleanseProperties=['clustering','ns','key'];
 
 // === functions ===
