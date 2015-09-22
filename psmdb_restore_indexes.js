@@ -13,7 +13,7 @@
 // these can be specified on command line in eval
 // with optXxx prefix.  For example:
 //
-// ./psmdb_restore_indexes.js --eval " optDEBUG=3; optTrialRun=true;  
+// ./psmdb_restore_indexes.js --eval " optDEBUG=3; optTrialRun=true; "
 
 // debug level - higher is more verbose
 // (default: 0)
