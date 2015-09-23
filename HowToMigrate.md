@@ -31,7 +31,7 @@
 
         dpkg -P --force-all `dpkg -l | grep tokumx | awk '{print $2}'`
 
-8. Install PSMDB:
+8. Install PSMDB
 
         # This assumes you've configured the correct Percona repository
 
@@ -40,11 +40,13 @@
             percona-server-mongodb-shell \
             percona-server-mongodb-tools
 
-9. Configure the storageEngine and turn off `--auth` in `/etc/mongod.conf`
+9. Stop the service and configure the storageEngine and turn off `--auth` in `/etc/mongod.conf`
 
-         sed -i'' s/^storageEngine/#storageEngine/ /etc/mongod.conf
-         sed -i'' s/^#storageEngine=PerconaFT/storageEngine=PerconaFT/ /etc/mongod.conf
-         sed -i'' s/^auth/#auth/ /etc/mongod.conf
+        service mongod stop
+
+        sed -i'' s/^storageEngine/#storageEngine/ /etc/mongod.conf
+        sed -i'' s/^#storageEngine=PerconaFT/storageEngine=PerconaFT/ /etc/mongod.conf
+        sed -i'' s/^auth/#auth/ /etc/mongod.conf
 
 10. Start the server
 
