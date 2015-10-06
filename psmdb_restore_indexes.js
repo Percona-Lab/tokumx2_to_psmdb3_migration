@@ -117,6 +117,8 @@ for (d in dbNames) {
 
     existingIndexes = collection.getIndexes();
 
+    newIndexes = [];
+
     if (DEBUG > 0) { print("\t"+collectionName); }
 
     // if specified, skip collections not found in db
@@ -167,14 +169,21 @@ for (d in dbNames) {
         printjson(options);
       }
 
-      // create the index
+      options.key=index.key;
+      newIndexes.push(options);
+
+    }
+
+    // create the indexes
+    if (newIndexes.length > 0) {
       if (!trialRun) {
-        if (DEBUG > 0) { print("\t\t\tCreating index: "+indexName); }
-        collection.createIndex(index.key, options);
+        if (DEBUG > 0) { print("\t\t\tCreating "+newIndexes.length+" indexes on: "+collectionName); }
+        db.runCommand({createIndexes: collectionName, indexes: newIndexes});
       } else {
-        if (DEBUG > 0) { print("\t\t\tWould create index: "+indexName); }
+        if (DEBUG > 0) { print("\t\t\tWould create "+newIndexes.length+" indexes on: "+collectionName); }
       }
     }
+
   }
 }
 
