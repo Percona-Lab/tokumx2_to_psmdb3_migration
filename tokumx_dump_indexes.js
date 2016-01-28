@@ -15,6 +15,10 @@ var dbs = db.adminCommand('listDatabases');
 
 dbs.databases.forEach(function(database){
 
+  if (database.name === 'local') {
+    return;
+  }
+
   result[database.name]={};
 
   db = db.getSiblingDB(database.name);
@@ -27,4 +31,3 @@ dbs.databases.forEach(function(database){
 
 print("var tokumxIndexes=");
 printjson(result);
-
