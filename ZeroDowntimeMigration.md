@@ -328,7 +328,7 @@ authentication as required which is outside of the scope of this document.
 
 In this phase we sync up the new target PSMDB 3.x server with the live source
 TokuMX 2.x server which has been continuing to operate through this entire
-migration process.  In order to do this, with use the toku2mongo tool primed
+migration process.  In order to do this, we use the toku2mongo tool primed
 with the GTID we recorded during the dump phase.
 
 1. Begin operation of the toku2mongo tool:
