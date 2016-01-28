@@ -364,7 +364,7 @@ with the GTID we recorded during the dump phase.
     Tue Jan 26 05:05:13.565 [toku2mongo] synced up to 1:3432553 (Jan 26 02:48:43), source has up to 1:4874082 (Jan 26 05:05:13), 8190 seconds behind source.
     ```
 
-    When the sync catches up you will finally seeing:
+    When the sync catches up you will see lines similar to:
 
     ```   
     Tue Jan 26 05:32:43.796 [toku2mongo] synced up to 1:5194652 (Jan 26 05:31:38), source has up to 1:5208180 (Jan 26 05:32:43), 65 seconds behind source.
