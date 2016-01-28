@@ -209,14 +209,12 @@ PSMDB 3.x target.
    indexes are defined separately during the restore phase.
 
     Use the
-    [`
-    psmdb_restore_indexes.js`](https://github.com/dbpercona/tokumx2_to_psmdb3_migration/blob/master/psmdb_restore_indexes.js)
+    [`tokumx_dump_indexes.js`](https://github.com/dbpercona/tokumx2_to_psmdb3_migration/blob/master/tokumx_dump_indexes.js)
     script from the
     [github.com/dbpercona/tokumx2_to_psmdb3_migration](https://github.com/dbpercona/tokumx2_to_psmdb3_migration
                                                        "tokumx2_to_psmdb3_migration")
-    repository to restore the index definitions to our target PSMDB 3.x
-    server.
-  
+    repository to dump the index definitions in JSON format.
+
     ```
     $ mongo --port=27018 --quiet \
         tokumx2_to_psmdb3_migration/tokumx_dump_indexes.js \
@@ -301,20 +299,22 @@ authentication as required which is outside of the scope of this document.
    were saved in JSON format in the dump phase.
 
     Use the
-    [`tokumx_dump_indexes.js`](https://github.com/dbpercona/tokumx2_to_psmdb3_migration/blob/master/tokumx_dump_indexes.js)
+    [`
+    psmdb_restore_indexes.js`](https://github.com/dbpercona/tokumx2_to_psmdb3_migration/blob/master/psmdb_restore_indexes.js)
     script from the
     [github.com/dbpercona/tokumx2_to_psmdb3_migration](https://github.com/dbpercona/tokumx2_to_psmdb3_migration
                                                        "tokumx2_to_psmdb3_migration")
-    repository to dump the index definitions in JSON format.
+    repository to restore the index definitions to our target PSMDB 3.x
+    server.
 
-   ```
-   $ mongo --host=psmdb3host \
-     tokumx2_to_psmdb3_migration/psmdb_restore_indexes.js \
-     --eval" data='tokumx2_dump/tokumxIndexes.json' "
-   ```
+    ```
+    $ mongo --host=psmdb3host \
+      tokumx2_to_psmdb3_migration/psmdb_restore_indexes.js \
+      --eval" data='tokumx2_dump/tokumxIndexes.json' "
+    ```
 
-   This process may take quite a while depending on the number of indexes and
-   the data size.  You will return to the command prompt when finished.
+    This process may take quite a while depending on the number of indexes and
+    the data size.  You will return to the command prompt when finished.
 
 4. (Optional to save space) Now that the BSON image is fully restored to PSMDB
    3.x you can remove the BSON dump. Be sure to keep the max applied GTID
