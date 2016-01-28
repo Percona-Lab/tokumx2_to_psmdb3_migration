@@ -5,7 +5,7 @@
 
 ## Overview
 
-This document describes how to migrate from the soure TokuMX 2.x to the target
+This document describes how to migrate from the source TokuMX 2.x to the target
 Percona Server for MongoDB 3.x (PSMDB) with zero to minimal downtime.  The
 migration process requires the following phases:
 
@@ -68,7 +68,7 @@ server credentials.
 2. If the source server is not running in Replica Set mode, it will need to be
    reconfigured and restarted.  This can be accomplished in two ways:
 
-    * The servers tokumx.conf configuration file can be modified to add the
+    * The servers `tokumx.conf` configuration file can be modified to add
     a replica set name:
 
       ```
@@ -93,7 +93,7 @@ server credentials.
 
 3. Once you have verified the Replica Set server is running in Replica Set
    mode you must create a hot backup of the source data.  This process is
-   described in detail in the the [Hot Backup section of the Percona TokuMX
+   described in detail in the [Hot Backup section of the Percona TokuMX
    Documentation](https://www.percona.com/doc/percona-tokumx/hot_backup.html
                   "Hot Backup Documentation").
 
@@ -125,7 +125,7 @@ the max processed GTID for the catchup phase, dump the index definitions in
 JSON format and dump the data image in BSON format that can be loaded into the
 PSMDB 3.x target.
 
-1. Launch our second instance of TokuMX 2.x.  It is not neccessary to launch
+1. Launch our second instance of TokuMX 2.x.  It is not necessary to launch
    this server in Replica Set mode as we are just using it as a dormant image
    to record the max applied GTID, dump the index definitions and save the
    data image in BSON format.  If you are running the second instance on the
@@ -241,8 +241,8 @@ TokuMX 2.x and run on a separate port which may be faster depending on network
 and block device speeds and existing load.
 
 You will need to install the `mongorestore` binary from PSMDB 3.x onto
-a system that has direct file access to your tokumx2_dump image creawted in
-the dump phase.  Luckily, `mongorestore` has very few dynamic depencies and is
+a system that has direct file access to your tokumx2_dump image created in
+the dump phase.  Luckily, `mongorestore` has very few dynamic dependencies and is
 very portable from system to system.
 
 For the sake of this document, we will assume that you have installed the
@@ -254,7 +254,7 @@ authentication as required which is outside of the scope of this document.
 1. Configure your new target server for use with the PerconaFT storage engine.
    This can be accomplished in two ways:
 
-    * The servers /etc/mongo.conf configuration file can be modified to enable
+    * The servers `/etc/mongo.conf` configuration file can be modified to enable
     the PerconaFT storage engine:
 
       ```
