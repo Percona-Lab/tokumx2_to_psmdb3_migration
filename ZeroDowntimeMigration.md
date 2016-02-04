@@ -1,13 +1,13 @@
 # Zero to Minimal Downtime Migration from TokuMX 2.x to PSMDB 3.x
 
 ### Author: David Bennett - david. bennett at percona. com
-### Date: 2016-01-27
+### Updated: 2016-02-04
 
 ## Overview
 
-This document describes how to migrate from the source TokuMX 2.x to the target
-Percona Server for MongoDB 3.x (PSMDB) with zero to minimal downtime.  The
-migration process requires the following phases:
+This document describes how to migrate from a source TokuMX 2.x server to
+a target Percona Server for MongoDB 3.x (PSMDB) with zero to minimal downtime.
+The migration process requires the following phases:
 
 1. [Snapshot](#snapshot) - Point in time source Backup
 2. [Dump](#dump) - Convert source backup to BSON
@@ -25,7 +25,7 @@ These are the tools you will need to perform a minimal downtime migration.
 2. mongodump utility from the TokuMX 2.x distribution
 3. scripts from the tokumx2_to_psmdb3_migration Repository
 4. mongorestore utility from the PSMDB 3.x distribution
-5. toku2mongo replication tool
+5. toku2mongo oplog pull and playback tool
 
 ### Storage
 
@@ -49,8 +49,8 @@ configuration.  This insures that the operations that occur after the snapshot
 is taken are being recorded for the catchup phase.   If the TokuMX server is
 not running in Replica Set mode, it must be reconfigured and restarted.
 
-For the sake of simplification of this process, we will leave MongoDB
-authentication out.  So when the `mongo` shell is referenced in these
+For the sake of simplification, we will leave MongoDB authentication out of
+these instructions.  So when the `mongo` shell is referenced in these
 examples, it is assumed that you are connecting as admin with the proper
 server credentials.
 
@@ -65,7 +65,7 @@ server credentials.
     Otherwise, the replica set name and members will be returned.  In this case
     the oplog is already active.
 
-2. If the source server is not running in Replica Set mode, it will need to be
+2. If the source server is *not* running in Replica Set mode, it will need to be
    reconfigured and restarted.  This can be accomplished in two ways:
 
     * The servers `tokumx.conf` configuration file can be modified to add
@@ -78,7 +78,7 @@ server credentials.
     * Or, the command line used to start the server can be amended with the
     `--replSet=rs0` parameter.
 
-    *Note:* `rs0` is used in this document as the Replica Set name.  You name
+    *Note:* `rs0` is used in this document as the Replica Set name.  You may 
     use another set name if required.
 
     After the server is restarted, you must initiate the replica set using the
@@ -91,8 +91,8 @@ server credentials.
     After this is completed, you should be able to repeat step 1 of this phase
     to insure that the server is running in Replica Set mode.
 
-3. Once you have verified the Replica Set server is running in Replica Set
-   mode you must create a hot backup of the source data.  This process is
+3. Once you have verified the TokuMX 2.x server is running in Replica Set
+   mode, it's time to create a hot backup of the source data.  This process is
    described in detail in the [Hot Backup section of the Percona TokuMX
    Documentation](https://www.percona.com/doc/percona-tokumx/hot_backup.html
                   "Hot Backup Documentation").
@@ -140,7 +140,7 @@ PSMDB 3.x target.
         mongod \
           --port=27018 \
           --dbpath=/var/lib/tokumx_backup \
-          > /tmp/mongod_2.out 2>&1 &'
+          > ~/mongod_2.out 2>&1 &'
     ```
 
     After starting the second TokuMX 2.x mongod instance, you can verify
@@ -148,7 +148,7 @@ PSMDB 3.x target.
     port.  The end of the new instances mongod log should resemble:
 
     ```
-    # tail -n18 /tmp/mongod_2.out
+    # tail -n18 ~/mongod_2.out
     Thu Jan 28 00:27:28.946 [initandlisten] [tokumx] startup
     Thu Jan 28 00:27:28 2016 TokuFT recovery starting in env /var/lib/tokumx_backup
     Thu Jan 28 00:27:28 2016 TokuFT recovery scanning backward from 3485
@@ -170,10 +170,10 @@ PSMDB 3.x target.
     ```
 
 2. Now that our dormant backup of the live image is recovered and accessible,
-   we can capture the max applied GTID or the last operation that was recorded
-   in the live image before backup.  This will allow us to start the catchup
-   phase at the exact point-in-time following the creation of the hot backup
-   image.
+   we can capture the max applied GTID.  This is the last operation that was
+   recorded in the live image before backup.  This will allow us to start the
+   catchup phase at the exact point-in-time following the creation of the hot
+   backup image.
 
     Use the
     [`max_applied_gtid.js`](https://github.com/dbpercona/tokumx2_to_psmdb3_migration/blob/master/max_applied_gtid.js)
@@ -182,8 +182,8 @@ PSMDB 3.x target.
                                                        "tokumx2_to_psmdb3_migration")
     repository to record the max applied GTID.
 
-    It is important to record the GTID as we will need it in the catch up phase.
-    In the example below, we save the GTID value into /tmp/max_applied_gtid.txt
+    It is important to save the GTID as we will need it in the catch up phase.
+    In the example below, we save the GTID value into ~/max_applied_gtid.txt
     for later retrieval.
 
     ```
@@ -192,7 +192,7 @@ PSMDB 3.x target.
     $ mongo \
         --port=27018 \
         --quiet tokumx2_to_psmdb3_migration/max_applied_gtid.js \
-        | tee /tmp/max_applied_gtid.txt
+        | tee ~/max_applied_gtid.txt
     To catchup from this image, use the toku2mongo parameter: --gtid=1:3369151
     ```
 
@@ -234,22 +234,23 @@ PSMDB 3.x target.
 ## Phase 3 - Restore <a name="restore"></a>
 
 Now that we have our max applied GTID, our JSON index definitions and our BSON
-data backup, we are ready to begin the import of data into PSMDB 3.x.  The
+data dump, we are ready to begin the import of data into PSMDB 3.x.  The
 restore can be performed to a remote machine over a network connection or
 a tarball distribution PSMDB 3.x can be installed on the same machine as
-TokuMX 2.x and run on a separate port which may be faster depending on network
-and block device speeds and existing load.
+TokuMX 2.x and run on a separate port which may be faster depending on space
+availability, network and block device speeds and existing load.
 
 You will need to install the `mongorestore` binary from PSMDB 3.x onto
-a system that has direct file access to your tokumx2_dump image created in
-the dump phase.  Luckily, `mongorestore` has very few dynamic dependencies and is
+a system that has direct file access to your tokumx2_dump image created in the
+dump phase.  Luckily, `mongorestore` has very few dynamic dependencies and is
 very portable from system to system.
 
 For the sake of this document, we will assume that you have installed the
-PSMDB 3.x mongorestore on the TokuMX 2.x live source system `localhost` and
-are installing on a remote host called `psmbd3host` using the default mongod
-port 27017.  Obviously, you will want to test connectivity and use
-authentication as required which is outside of the scope of this document.
+PSMDB 3.x mongorestore binary on the TokuMX 2.x live source system `localhost`
+and that you are restoring to a remote host called `psmbd3host` using the
+default mongod port 27017.  You will need to configure the system firewall,
+test connectivity and use authentication as required which is outside the
+scope of this document.
 
 1. Configure your new target server for use with the PerconaFT storage engine.
    This can be accomplished in two ways:
@@ -267,19 +268,19 @@ authentication as required which is outside of the scope of this document.
 
     *Note:* A storage engine change requires completely purging the data
     directory, so this should be done on new PSMDB 3.x server.  For PSMDB 3.x
-    installed from Percona packaging, this involves:
+    installed from Percona packaging, the steps are:
 
     1. Stop the server
-    2. Modify the configuration to use PerconaFT
-    3. Delete all contents in the /var/lib/mongo directory
-    4. Restart the server (default data files will be created automatically)
+    2. Modify the `/etc/mongo.conf` configuration to use PerconaFT
+    3. Delete all contents in the `/var/lib/mongo` directory
+    4. Start the server (default data files will be created automatically)
 
 2. Begin the restore process.  For this example we are beginning the restore
    from the live source system where we dumped the TokuMX 2.x dormant image.
    In this example we are copying the PSMDB 3.x mongorestore tool from the
    target system and using that to populate the target database.  The
    `--noIndexRestore` option insures that we don't restore the TokuMX 2.x
-   index definitions which are incompatible with MongoDB 3.x.
+   index definitions which are incompatible with PSMDB 3.x.
 
    ```
    $ scp user@psmdb3host:/usr/bin/mongorestore .
@@ -314,7 +315,8 @@ authentication as required which is outside of the scope of this document.
     ```
 
     This process may take quite a while depending on the number of indexes and
-    the data size.  You will return to the command prompt when finished.
+    the data size.  You will be returned to the command prompt when the script
+    is finished.
 
 4. (Optional to save space) Now that the BSON image is fully restored to PSMDB
    3.x you can remove the BSON dump. Be sure to keep the max applied GTID
@@ -331,13 +333,18 @@ TokuMX 2.x server which has been continuing to operate through this entire
 migration process.  In order to do this, we use the toku2mongo tool primed
 with the GTID we recorded during the dump phase.
 
+You can [download the toku2mongo tool](https://www.percona.com/downloads/toku2mongo)
+from the Percona website.
+
 1. Begin operation of the toku2mongo tool:
 
     ```
-    $ cat /tmp/max_applied_gtid.txt 
+    $ tar xzvf toku2mongo-2.0.2-xxx-x86_64.tar.gz
+    $ cd toku2mongo-2.0.2-xxx-x86_64
+    $ cat ~/max_applied_gtid.txt 
     To catchup from this image, use the toku2mongo parameter: --gtid=1:3369151
-    $ ./toku2mongo --from localhost --gtid=1:3369151 \
-        --host psmdb3host 2>&1 | tee toku2mongo.log &
+    $ bin/toku2mongo --from localhost --gtid=1:3369151 \
+        --host psmdb3host 2>&1 | tee ~/toku2mongo.out &
     ```
 
     The toku2mongo tool will continue to run and process the operations that
@@ -349,7 +356,7 @@ with the GTID we recorded during the dump phase.
     You can use the command:
 
     ```
-    $ grep -v 'pk =' toku2mongo.out
+    $ grep -v 'pk =' ~/toku2mongo.out
     ```
 
     You will see output like:
@@ -383,7 +390,9 @@ with the GTID we recorded during the dump phase.
 ## Phase 5 - Switch <a name="switch"></a>
 
 When you are ready to switch your application over to PSMDB 3.x, leave toku2mongo
-running through the entire process.
+running through the entire process.  The specifics of how this procedure is
+performed in your application environment are understandably outside the scope
+of this document. In general, these are the steps required:
 
 1. Pause your application's writes to TokuMX 2.x.
 
@@ -397,4 +406,5 @@ running through the entire process.
     $ killall -6 toku2mongo
     ```
 
-At this point, you can delete the old TokuMX 2.x data and shut down the machines it was running on.
+The migration is now complete.  At this point you can shutdown the TokuMX 2.x server.
+
