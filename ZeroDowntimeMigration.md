@@ -15,6 +15,8 @@ The migration process requires the following phases:
 4. [Catchup](#catchup) - Play operation log from source to target
 5. [Switch](#switch) - Reconfigure application layer to use target
 
+![Zero Downtime Migration Diagram](https://raw.githubusercontent.com/dbpercona/tokumx2_to_psmdb3_migration/master/tokumx2%20to%20psmdb%203%200-downtime%20migration.png)
+
 ## Prerequisites
 
 ### Tools
