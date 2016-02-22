@@ -249,7 +249,7 @@ very portable from system to system.
 
 For the sake of this document, we will assume that you have installed the
 PSMDB 3.x mongorestore binary on the TokuMX 2.x live source system `localhost`
-and that you are restoring to a remote host called `psmbd3host` using the
+and that you are restoring to a remote host called `psmdb3host` using the
 default mongod port 27017.  You will need to configure the system firewall,
 test connectivity and use authentication as required which is outside the
 scope of this document.
@@ -313,7 +313,7 @@ scope of this document.
     ```
     $ mongo --host=psmdb3host \
       tokumx2_to_psmdb3_migration/psmdb_restore_indexes.js \
-      --eval" data='tokumx2_dump/tokumxIndexes.json' "
+      --eval " data='tokumx2_dump/tokumxIndexes.json' "
     ```
 
     This process may take quite a while depending on the number of indexes and
