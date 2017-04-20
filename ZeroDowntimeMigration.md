@@ -254,26 +254,32 @@ default mongod port 27017.  You will need to configure the system firewall,
 test connectivity and use authentication as required which is outside the
 scope of this document.
 
-1. Configure your new target server for use with the PerconaFT storage engine.
-   This can be accomplished in two ways:
+1. Configure your new target server for use with the WiredTiger or RocksDB 
+   storage engine. This can be accomplished in two ways:
 
     * The servers `/etc/mongo.conf` configuration file can be modified to enable
-    the PerconaFT storage engine:
+    the new storage engine:
 
       ```
       storage:
-        engine: PerconaFT
+        engine: wiredTiger 
+      ```
+      or
+
+      ```
+      storage:
+        engine: rocksdb  
       ```
 
     * Or, the command line used to start the server can be amended with the
-    `--storageEngine=PerconaFT` parameter.
+    `--storageEngine=wiredTiger` or `--storageEngine=rocksdb` parameter.
 
     *Note:* A storage engine change requires completely purging the data
     directory, so this should be done on new PSMDB 3.x server.  For PSMDB 3.x
     installed from Percona packaging, the steps are:
 
     1. Stop the server
-    2. Modify the `/etc/mongo.conf` configuration to use PerconaFT
+    2. Modify the `/etc/mongo.conf` configuration to use wiredTiger or rocksdb
     3. Delete all contents in the `/var/lib/mongo` directory
     4. Start the server (default data files will be created automatically)
 

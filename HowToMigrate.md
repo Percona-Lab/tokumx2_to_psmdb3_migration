@@ -1,4 +1,4 @@
-# TokuMX 2.0.x to Percona Server for MongoDB 3.0.x migration
+# TokuMX 2.0.x to Percona Server for MongoDB 3.x migration
 
 1. Restart the tokumx server without the `--auth` parameter
 
@@ -42,10 +42,20 @@
 
 9. Stop the service and configure the storageEngine and turn off `--auth` in `/etc/mongod.conf`
 
+   **For WiredTiger**
+
         service mongod stop
 
         sed -i'' s/^storageEngine/#storageEngine/ /etc/mongod.conf
-        sed -i'' s/^#storageEngine=PerconaFT/storageEngine=PerconaFT/ /etc/mongod.conf
+        sed -i'' s/^#storageEngine=wiredTiger/storageEngine=wiredTiger/ /etc/mongod.conf
+        sed -i'' s/^auth/#auth/ /etc/mongod.conf
+
+   **For RocksDB**
+
+        service mongod stop
+
+        sed -i'' s/^storageEngine/#storageEngine/ /etc/mongod.conf
+        sed -i'' s/^#storageEngine=rocksdb/storageEngine=rocksdb/ /etc/mongod.conf
         sed -i'' s/^auth/#auth/ /etc/mongod.conf
 
 10. Start the server
