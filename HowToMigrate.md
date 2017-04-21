@@ -1,5 +1,8 @@
 # TokuMX 2.0.x to Percona Server for MongoDB 3.x migration
 
+### Author: David Bennett - david. bennett at percona. com
+### Updated: 2016-04-21
+
 1. Restart the tokumx server without the `--auth` parameter
 
          service tokumx stop
