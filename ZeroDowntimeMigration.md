@@ -254,7 +254,7 @@ PSMDB 3.x target.
    ```
    6.4) Dump the 2.6 admin collection and move the folder to the 2.4 (tokuMX) backup, this can be done with a single command like:
    ```
-   #mongodump --port 27000 -d admin tokumx2_dump
+   #mongodump --port 27000 -d admin -o tokumx2_dump
    ```
    6.4) At the end of this process the admin database will be ready to be restored in any MongoDB 3+
 
@@ -269,7 +269,7 @@ TokuMX 2.x and run on a separate port which may be faster depending on space
 availability, network and block device speeds and existing load.
 
 You will need to install the `mongorestore` binary from PSMDB 3.x onto
-a system that has direct file access to your tokumx2_dump image created in the
+a system that has direct file access to your image created in the
 dump phase.  Luckily, `mongorestore` has very few dynamic dependencies and is
 very portable from system to system.
 
