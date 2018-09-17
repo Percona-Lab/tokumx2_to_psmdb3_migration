@@ -258,7 +258,7 @@ PSMDB 3.x target.
    ```
    #mongodump --port 27000 -d admin -o tokumx2_dump
    ```
-   At the end of this process the admin database will be ready to be restored in any MongoDB 3+
+   At the end of this process the admin database will be ready to be restored in any MongoDB 3+.
 
 
 ## Phase 3 - Restore <a name="restore"></a>
