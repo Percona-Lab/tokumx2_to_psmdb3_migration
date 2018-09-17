@@ -235,6 +235,7 @@ PSMDB 3.x target.
 6. ONLY IF USING AUTHENTICATION
    If you are running tokumx with authentication it will be necessary to convert the users collection.
    It will be necessary a MongoDB version 2.6 to perform this operation, this can be found [here] (http://downloads.mongodb.org/linux/mongodb-linux-x86_64-2.6.12.tgz)
+   
    6.1) Start a mongodb 2.6 in a temp directory:
    ```
    # mkdir /tmp/mongo2.6
@@ -256,7 +257,7 @@ PSMDB 3.x target.
    ```
    #mongodump --port 27000 -d admin -o tokumx2_dump
    ```
-   6.4) At the end of this process the admin database will be ready to be restored in any MongoDB 3+
+   At the end of this process the admin database will be ready to be restored in any MongoDB 3+
 
 
 ## Phase 3 - Restore <a name="restore"></a>
