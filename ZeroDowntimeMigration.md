@@ -233,6 +233,7 @@ PSMDB 3.x target.
     # rm -rf /var/lib/tokumx_backup
     ```
 6. ONLY IF USING AUTHENTICATION
+
    If you are running tokumx with authentication it will be necessary to convert the users collection.
    It will be necessary a MongoDB version 2.6 to perform this operation, this can be found [here] (http://downloads.mongodb.org/linux/mongodb-linux-x86_64-2.6.12.tgz)
    
