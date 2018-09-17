@@ -232,6 +232,32 @@ PSMDB 3.x target.
     # mongod --port=27018 --dbpath=/var/lib/tokumx_backup --shutdown
     # rm -rf /var/lib/tokumx_backup
     ```
+6. ONLY IF USING AUTHENTICATION
+   If you are running tokumx with authentication it will be necessary to convert the users collection.
+   It will be necessary a MongoDB version 2.6 to perform this operation, this can be found [here] (http://downloads.mongodb.org/linux/mongodb-linux-x86_64-2.6.12.tgz)
+   6.1) Start a mongodb 2.6 in a temp directory:
+   ```
+   # mkdir /tmp/mongo2.6
+   # mongod --dbpath /tmp/mongo2.6 --logpath /tmp/mongo2.6/log.log --fork --smallfiles --port 27000
+   ```
+   6.2) Restore only the admin database using a 2.4 mongorestore.
+   ```
+   # mongorestore --port 27000 -d admin tokumx2_dump/admin
+   # mv tokumx2_dump/admin /tmp/
+   ```
+   6.3) Connect to the mongodb 2.6 with a mongo 2.6 client and run the following commands, we expect to see an output similar to: 
+   ```
+   #mongo --port 27000
+   > use admin
+   > db.adminCommand({authSchemaUpgrade: 1 });
+   { "done" : true, "ok" : 1 }
+   ```
+   6.4) Dump the 2.6 admin collection and move the folder to the 2.4 (tokuMX) backup, this can be done with a single command like:
+   ```
+   #mongodump --port 27000 -d admin tokumx2_dump
+   ```
+   6.4) At the end of this process the admin database will be ready to be restored in any MongoDB 3+
+
 
 ## Phase 3 - Restore <a name="restore"></a>
 
